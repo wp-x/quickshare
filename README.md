@@ -7,6 +7,8 @@
 - **多格式支持**: 支持 HTML、Markdown、SVG、Mermaid 图表等多种内容类型
 - **在线预览**: 实时渲染和预览分享的内容
 - **密码保护**: 支持为分享的内容设置密码保护
+- **多级权限系统**: 支持普通用户和管理员两种权限级别
+- **管理后台**: 完整的管理界面，支持页面管理和统计
 - **语法高亮**: 内置代码语法高亮功能
 - **用户认证**: 可选的用户认证系统
 - **响应式设计**: 支持桌面和移动设备访问
@@ -32,64 +34,7 @@
 
 ## 🚀 快速开始
 
-### 方法一：直接运行（推荐）
-
-#### Windows 用户
-
-1. **安装 Node.js**
-   ```bash
-   # 从 https://nodejs.org 下载并安装 LTS 版本
-   ```
-
-2. **一键部署**
-   ```cmd
-   # 双击运行
-   windows-deploy.bat
-   ```
-
-3. **内网部署**
-   ```cmd
-   # 配置防火墙（需要管理员权限）
-   setup-firewall.bat
-   
-   # 启动内网服务
-   start-intranet.bat
-   ```
-
-#### Linux/macOS 用户
-
-1. **克隆项目**
-   ```bash
-   git clone <repository-url>
-   cd quickshare
-   ```
-
-2. **安装依赖**
-   ```bash
-   npm install
-   ```
-
-3. **创建必要目录**
-   ```bash
-   mkdir -p db sessions data
-   ```
-
-4. **配置环境变量**
-   ```bash
-   cp env.example .env
-   # 编辑 .env 文件设置您的配置
-   ```
-
-5. **启动应用**
-   ```bash
-   # 开发环境
-   npm run dev
-   
-   # 生产环境
-   npm run prod
-   ```
-
-### 方法二：Docker 部署
+Docker 部署
 
 #### 使用 Docker Compose（推荐）
 
@@ -149,7 +94,9 @@
 | `PORT` | `5678` | 应用端口 |
 | `HOST` | `localhost` | 监听地址 (设置为 0.0.0.0 允许外部访问) |
 | `AUTH_ENABLED` | `false` | 是否启用认证功能 |
-| `AUTH_PASSWORD` | `admin123` | 登录密码 |
+| `AUTH_PASSWORD` | `admin123` | 登录密码（向后兼容，作为管理员密码） |
+| `ADMIN_PASSWORD` | `admin123` | 管理员密码（完全权限） |
+| `USER_PASSWORD` | `user123` | 普通用户密码（只能发布HTML） |
 
 ### 配置文件
 
@@ -160,18 +107,42 @@ NODE_ENV=production
 PORT=8888
 HOST=0.0.0.0
 AUTH_ENABLED=true
-AUTH_PASSWORD=your_secure_password
+AUTH_PASSWORD=your_secure_admin_password
+ADMIN_PASSWORD=your_secure_admin_password
+USER_PASSWORD=your_secure_user_password
 ```
 
 ## 📖 使用说明
+
+### 多级权限系统
+
+系统支持两种用户类型，提供不同的功能权限：
+
+#### 普通用户权限 (user)
+- ✅ 登录系统
+- ✅ 创建和分享HTML/Markdown/SVG/Mermaid内容
+- ✅ 设置密码保护
+- ❌ 无法看到管理页面按钮
+- ❌ 无法访问管理功能
+
+#### 管理员权限 (admin)
+- ✅ 所有普通用户权限
+- ✅ 访问管理页面
+- ✅ 查看所有页面列表和统计信息
+- ✅ 查看受保护页面的访问密码
+- ✅ 删除任意页面（单个或批量）
+- ✅ 管理系统设置
 
 ### 基本使用
 
 1. **访问应用**: 在浏览器中打开 `http://localhost:8888`
 2. **登录**: 如果启用了认证，使用配置的密码登录
+   - 使用管理员密码：获得完全权限，可以看到管理页面按钮
+   - 使用普通用户密码：只能创建和分享内容
 3. **创建分享**: 在主页面粘贴或上传您的代码内容
 4. **设置保护**: 可选择为内容设置密码保护
 5. **分享链接**: 获取生成的分享链接
+6. **管理内容**: 管理员可以通过管理页面查看和管理所有内容
 
 ### 支持的内容类型
 
@@ -196,6 +167,33 @@ Content-Type: application/json
 #### 获取页面
 ```http
 GET /view/:id?password=your_password
+```
+
+#### 管理API（需要管理员权限）
+
+**获取页面列表**
+```http
+GET /api/admin/pages?page=1&limit=10&search=keyword
+```
+
+**删除单个页面**
+```http
+DELETE /api/admin/pages/:id
+```
+
+**批量删除页面**
+```http
+POST /api/admin/pages/batch-delete
+Content-Type: application/json
+
+{
+  "ids": ["page_id_1", "page_id_2"]
+}
+```
+
+**获取统计信息**
+```http
+GET /api/admin/stats
 ```
 
 ## 🔧 高级配置
@@ -327,17 +325,25 @@ services:
       - "8888:8888"
     volumes:
       - html-go-data:/usr/src/app/data
+      - html-go-sessions:/usr/src/app/sessions
+      - html-go-db:/usr/src/app/db
     environment:
       - NODE_ENV=production
       - PORT=8888
       - AUTH_ENABLED=true
-      - AUTH_PASSWORD=your_secure_password  # 修改密码
+      - AUTH_PASSWORD=your_secure_admin_password  # 向后兼容
+      - ADMIN_PASSWORD=your_secure_admin_password  # 管理员密码
+      - USER_PASSWORD=your_secure_user_password    # 普通用户密码
       - HOST=0.0.0.0
     networks:
       - html-go-network
 
 volumes:
   html-go-data:
+    driver: local
+  html-go-sessions:
+    driver: local
+  html-go-db:
     driver: local
 
 networks:
@@ -348,10 +354,15 @@ networks:
 ## 🔒 安全建议
 
 1. **修改默认密码**: 务必修改默认的认证密码
-2. **使用 HTTPS**: 生产环境建议配置 SSL/TLS
-3. **防火墙配置**: 合理配置防火墙规则
-4. **定期备份**: 定期备份数据库和会话文件
-5. **更新依赖**: 定期更新 Node.js 依赖包
+2. **权限分离**: 普通用户和管理员密码应该不同，确保权限隔离
+3. **强密码策略**: 使用复杂的密码，特别是管理员密码
+4. **定期更换密码**: 建议定期更换认证密码
+5. **使用 HTTPS**: 生产环境建议配置 SSL/TLS
+6. **防火墙配置**: 合理配置防火墙规则
+7. **定期备份**: 定期备份数据库和会话文件
+8. **更新依赖**: 定期更新 Node.js 依赖包
+9. **权限审计**: 定期检查用户权限和访问日志
+10. **管理员权限**: 谨慎分配管理员权限，避免权限滥用
 
 ## 📊 性能优化
 
@@ -397,6 +408,24 @@ networks:
 
 ## 📝 更新日志
 
+### v2.1.0 - 多级权限系统
+- ✨ 新增多级权限系统，支持普通用户和管理员两种权限
+- ✨ 新增完整的管理后台界面
+- ✨ 管理员可以查看所有页面列表和统计信息
+- ✨ 管理员可以查看受保护页面的访问密码
+- ✨ 支持单个和批量删除页面功能
+- ✨ 新增页面标题提取和显示功能
+- 🔧 优化了用户认证流程和权限控制
+- 🔧 改进了数据库结构，添加了title字段
+- 📚 完善了文档和配置说明
+
+### v2.0.0 - 功能增强
+- ✨ 添加了密码保护功能
+- ✨ 支持多种内容类型（HTML、Markdown、SVG、Mermaid）
+- ✨ 改进了用户界面和体验
+- 🔧 优化了代码检测和渲染逻辑
+- 🐳 完善了Docker部署支持
+
 查看 [开发经验.md](./开发经验.md) 了解详细的开发历程和优化记录。
 
 ## 🤝 贡献指南
@@ -422,6 +451,6 @@ networks:
 ---
 
 **快速链接**
-- [Windows 部署指南](./Windows部署指南.md)
-- [Docker 安装指南](./DOCKER_INSTALL.md)
 - [开发经验总结](./开发经验.md)
+- [多级权限系统更新说明](./多级权限系统更新说明.md)
+- [管理页面功能说明](./管理页面功能说明.md)
