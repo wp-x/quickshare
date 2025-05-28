@@ -22,7 +22,7 @@ console.log('环境变量:', {
 });
 
 // 导入认证中间件
-const { isAuthenticated } = require('./middleware/auth');
+const { isAuthenticated, isAdmin } = require('./middleware/auth');
 
 // 导入配置
 const config = require('./config');
@@ -116,8 +116,8 @@ app.post('/login', (req, res) => {
 
   console.log('登录尝试:');
   console.log('- 密码:', password);
-  console.log('- 配置密码:', config.authPassword);
-  console.log('- 密码匹配:', password === config.authPassword);
+  console.log('- 管理员密码:', config.adminPassword);
+  console.log('- 普通用户密码:', config.userPassword);
 
   // 如果认证功能未启用，直接重定向到首页
   if (!config.authEnabled) {
@@ -125,14 +125,27 @@ app.post('/login', (req, res) => {
     return res.redirect('/');
   }
 
-  // 检查密码是否正确
-  if (password === config.authPassword) {
-    console.log('- 密码正确，设置认证');
+  let userType = null;
+  
+  // 检查是否为管理员密码
+  if (password === config.adminPassword) {
+    userType = 'admin';
+    console.log('- 管理员密码正确');
+  }
+  // 检查是否为普通用户密码
+  else if (password === config.userPassword) {
+    userType = 'user';
+    console.log('- 普通用户密码正确');
+  }
+
+  if (userType) {
+    console.log(`- 设置认证，用户类型: ${userType}`);
 
     // 同时使用会话和 Cookie 来存储认证状态
     // 1. 设置会话
     req.session.isAuthenticated = true;
-    console.log('- 设置会话认证标记');
+    req.session.userType = userType;
+    console.log('- 设置会话认证标记和用户类型');
 
     // 2. 设置 Cookie
     res.cookie('auth', 'true', {
@@ -201,6 +214,119 @@ app.post('/api/pages/create', isAuthenticated, async (req, res) => {
 // 其他 API 不需要认证
 app.use('/api/pages', pagesRoutes);
 
+// 管理页面路由 - 需要管理员权限
+app.get('/admin', isAdmin, (req, res) => {
+  res.render('admin', { 
+    title: 'HTML-Go | 管理页面' 
+  });
+});
+
+// 管理页面API - 获取所有页面列表
+app.get('/api/admin/pages', isAdmin, async (req, res) => {
+  try {
+    const { getAllPages } = require('./models/pages');
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const search = req.query.search || '';
+    
+    const result = await getAllPages(page, limit, search);
+    
+    res.json({
+      success: true,
+      data: result.pages,
+      pagination: {
+        currentPage: page,
+        totalPages: result.totalPages,
+        totalItems: result.total,
+        hasNext: page < result.totalPages,
+        hasPrev: page > 1
+      }
+    });
+  } catch (error) {
+    console.error('获取页面列表错误:', error);
+    res.status(500).json({
+      success: false,
+      error: '服务器错误'
+    });
+  }
+});
+
+// 管理页面API - 删除页面
+app.delete('/api/admin/pages/:id', isAdmin, async (req, res) => {
+  try {
+    const { deletePageById } = require('./models/pages');
+    const { id } = req.params;
+    
+    const result = await deletePageById(id);
+    
+    if (result) {
+      res.json({
+        success: true,
+        message: '页面删除成功'
+      });
+    } else {
+      res.status(404).json({
+        success: false,
+        error: '页面不存在'
+      });
+    }
+  } catch (error) {
+    console.error('删除页面错误:', error);
+    res.status(500).json({
+      success: false,
+      error: '服务器错误'
+    });
+  }
+});
+
+// 管理页面API - 批量删除页面
+app.post('/api/admin/pages/batch-delete', isAdmin, async (req, res) => {
+  try {
+    const { batchDeletePages } = require('./models/pages');
+    const { ids } = req.body;
+    
+    if (!Array.isArray(ids) || ids.length === 0) {
+      return res.status(400).json({
+        success: false,
+        error: '请提供要删除的页面ID列表'
+      });
+    }
+    
+    const result = await batchDeletePages(ids);
+    
+    res.json({
+      success: true,
+      message: `成功删除 ${result.deletedCount} 个页面`,
+      deletedCount: result.deletedCount
+    });
+  } catch (error) {
+    console.error('批量删除页面错误:', error);
+    res.status(500).json({
+      success: false,
+      error: '服务器错误'
+    });
+  }
+});
+
+// 管理页面API - 获取统计信息
+app.get('/api/admin/stats', isAdmin, async (req, res) => {
+  try {
+    const { getStats } = require('./models/pages');
+    const stats = await getStats();
+    
+    res.json({
+      success: true,
+      data: stats
+    });
+  } catch (error) {
+    console.error('获取统计信息错误:', error);
+    res.status(500).json({
+      success: false,
+      error: '服务器错误'
+    });
+  }
+});
+
 // 密码验证路由 - 用于AJAX验证
 app.get('/validate-password/:id', async (req, res) => {
   try {
@@ -230,7 +356,10 @@ app.get('/validate-password/:id', async (req, res) => {
 
 // 首页路由 - 需要登录才能访问
 app.get('/', isAuthenticated, (req, res) => {
-  res.render('index', { title: 'HTML-Go | 分享 HTML 代码的简单方式' });
+  res.render('index', { 
+    title: 'HTML-Go | 分享 HTML 代码的简单方式',
+    userType: req.session?.userType || 'user'
+  });
 });
 
 // 导入代码类型检测和内容渲染工具
@@ -410,8 +539,29 @@ initDatabase().then(() => {
   console.log(`实际使用端口: ${PORT}`);
   console.log(`日志级别: ${config.logLevel}`);
 
-  app.listen(PORT, () => {
-    console.log(`服务器运行在 http://localhost:${PORT}`);
+  // 修改监听地址以支持内网访问
+  const host = process.env.HOST || '0.0.0.0';
+  
+  app.listen(PORT, host, () => {
+    console.log(`服务器运行在 http://${host}:${PORT}`);
+    
+    // 获取本机IP地址
+    const os = require('os');
+    const networkInterfaces = os.networkInterfaces();
+    console.log('\n可用的访问地址:');
+    console.log(`- 本机访问: http://localhost:${PORT}`);
+    console.log(`- 本机访问: http://127.0.0.1:${PORT}`);
+    
+    // 显示所有网络接口的IP地址
+    Object.keys(networkInterfaces).forEach(interfaceName => {
+      const interfaces = networkInterfaces[interfaceName];
+      interfaces.forEach(interface => {
+        if (interface.family === 'IPv4' && !interface.internal) {
+          console.log(`- 内网访问: http://${interface.address}:${PORT}`);
+        }
+      });
+    });
+    console.log('');
 
     // 添加路由处理器日志
     console.log('已注册的路由:');

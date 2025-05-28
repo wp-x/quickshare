@@ -26,14 +26,27 @@ function initDatabase() {
           created_at INTEGER NOT NULL,
           password TEXT,
           is_protected INTEGER DEFAULT 0,
-          code_type TEXT DEFAULT 'html'
+          code_type TEXT DEFAULT 'html',
+          title TEXT DEFAULT '无标题'
         )
       `, (err) => {
         if (err) {
           reject(err);
         } else {
-          console.log('数据库初始化成功');
-          resolve();
+          // 检查是否需要添加title字段（为了兼容旧数据库）
+          db.run(`
+            ALTER TABLE pages ADD COLUMN title TEXT DEFAULT '无标题'
+          `, (alterErr) => {
+            // 忽略字段已存在的错误
+            if (alterErr && !alterErr.message.includes('duplicate column name')) {
+              console.warn('添加title字段时出现警告:', alterErr.message);
+            } else if (!alterErr) {
+              console.log('成功添加title字段');
+            }
+            
+            console.log('数据库初始化成功');
+            resolve();
+          });
         }
       });
     });
