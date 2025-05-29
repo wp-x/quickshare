@@ -2,6 +2,9 @@
 
 一个基于 Node.js 和 Express 框架的 HTML 代码分享工具，支持多种内容类型的在线分享和预览。
 
+![dd376e4bef4758fe3472362ce910eeea](https://github.com/user-attachments/assets/1e237e3c-3c76-4af3-abb0-aeecc24bfa60)
+
+
 ## 🚀 功能特性
 
 - **多格式支持**: 支持 HTML、Markdown、SVG、Mermaid 图表等多种内容类型
