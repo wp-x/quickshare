@@ -1,107 +1,129 @@
 <%- include('partials/header', { title }) %>
 
-<div class="main-container">
-  <header class="app-header">
-    <div class="title-container">
-      <h1 class="cyber-title"><span>H</span><span>T</span><span>M</span><span>L</span><span>-</span><span>G</span><span>O</span></h1>
+<div class="hero-section">
+  <!-- Background video -->
+  <video autoplay muted loop playsinline class="hero-video">
+    <source src="https://cdn.animatex.io/static/hero-videos/hero-bg-lossless.webm" type="video/webm"/>
+    <source src="https://cdn.animatex.io/static/hero-videos/hero-bg.mp4" type="video/mp4"/>
+  </video>
+  <div class="hero-overlay"></div>
+  
+  <!-- Navigation -->
+  <nav class="hero-nav">
+    <div class="nav-brand">
+      <div class="brand-logo">
+        <i class="fas fa-code brand-icon"></i>
+        <span class="brand-text">QuickShare</span>
+      </div>
     </div>
-    <p class="app-description">分享AI生成内容的最佳方式</p>
-    <!-- 管理页面链接 - 只对管理员显示 -->
-    <% if (userType === 'admin') { %>
-    <div class="admin-link-container" style="margin-top: 1rem;">
-      <a href="/admin" 
-         class="cyber-btn cyber-btn-secondary" 
-         style="font-size: 0.9rem; padding: 0.5rem 1rem; text-decoration: none;"> <!-- 添加这一行 -->
-        <i class="fas fa-cogs"></i>  &nbsp;管理页面
-      </a>
+    <div class="nav-actions">
+      <% if (userType === 'admin') { %>
+        <a href="/admin" class="nav-link admin-link">
+          <i class="fas fa-cogs"></i>
+          管理页面
+        </a>
+      <% } %>
     </div>
-    <% } %>
-  </header>
+  </nav>
+  
+  <!-- Hero content -->
+  <div class="hero-content">
+    <div class="hero-text">
+      <h1 class="hero-title">Share. Create. Inspire</h1>
+      <p class="hero-subtitle">
+        分享AI生成内容的最佳方式 - 支持HTML、Markdown、SVG、Mermaid等多种格式
+      </p>
+    </div>
 
-  <div class="content-area">
-    <!-- 代码输入卡片 -->
-    <div class="card input-card">
-      <!-- HTML 输入区域 -->
-      <div class="input-section">
-        <!-- 移除了标签切换，默认只显示粘贴框 -->
-        
-        <!-- 加载指示器 -->
+    <!-- Main input area -->
+    <div class="main-input-area">
+      <div class="glass-card input-card">
+        <!-- Loading indicator -->
         <div id="loading-indicator" class="loading-indicator">
           <div class="spinner"></div>
           <span>处理中...</span>
         </div>
         
-        <!-- 代码输入 -->
-        <div id="code-input-container" role="tabpanel">
-          <!-- 代码类型指示器 -->
-          <div id="code-type-indicator" class="code-type-indicator html-type">
+        <!-- Search-like input container -->
+        <div class="search-input-container">
+          <div class="search-icon">
             <i class="fas fa-code"></i>
+          </div>
+          <div id="code-type-indicator" class="code-type-badge html-type">
             <span id="code-type-text">HTML</span>
           </div>
-          <textarea id="html-input" class="cyber-input" placeholder="在这里粘贴你的 HTML/Markdown/SVG/Mermaid 代码..." aria-label="HTML 代码输入区域"></textarea>
+          <textarea id="html-input" class="main-input" placeholder="粘贴你的 HTML/Markdown/SVG/Mermaid 代码..." aria-label="代码输入区域"></textarea>
+          <button id="generate-button" class="generate-btn">
+            生成链接
+            <i class="fas fa-arrow-right"></i>
+          </button>
         </div>
         
-        <!-- 隐藏文件上传区域，但保留文件上传功能 -->
-        <div style="display: none;">
-          <input id="html-file" type="file" class="hidden" accept=".html,.htm" aria-label="上传 HTML 文件" />
-          <p id="file-name" class="mt-3" style="color: var(--primary);"></p>
-        </div>
-        
-        <!-- 按钮 -->
-        <div class="mt-4 flex justify-between" style="display: flex; justify-content: space-between; margin-top: 1rem;">
-          <div>
-            <label for="html-file" class="cyber-btn cyber-btn-secondary tooltip micro-interaction" data-tooltip="上传HTML文件" aria-label="上传HTML文件">
-              <i class="fas fa-file-upload mr-1" aria-hidden="true"></i>上传文件
+        <!-- Additional controls -->
+        <div class="input-controls">
+          <input id="html-file" type="file" class="hidden" accept=".html,.htm" aria-label="上传文件" />
+          <div class="control-buttons">
+            <label for="html-file" class="control-btn upload-btn">
+              <i class="fas fa-upload"></i>
+              上传文件
             </label>
-          </div>
-          <div style="display: flex; gap: 12px;">
-            <button id="clear-button" class="cyber-btn cyber-btn-secondary tooltip micro-interaction" data-tooltip="清空内容" aria-label="清空内容">
-              <i class="fas fa-eraser mr-1" aria-hidden="true"></i>清除
-            </button>
-            <button id="generate-button" class="cyber-btn cyber-btn-primary tooltip micro-interaction" data-tooltip="生成分享链接" aria-label="生成分享链接">
-              <i class="fas fa-link mr-1" aria-hidden="true"></i>生成链接
+            <button id="clear-button" class="control-btn clear-btn">
+              <i class="fas fa-trash"></i>
+              清空
             </button>
           </div>
         </div>
       </div>
     </div>
     
-    <!-- 结果区域卡片 -->
-    <div id="result-section" class="card result-card" style="display: none;" aria-live="polite">
-      <h3 class="section-title" style="color: var(--primary); font-family: 'Orbitron', sans-serif; margin-bottom: 1rem;">链接已生成</h3>
-      <div class="result-container">
-        <div id="result-url" class="result-url" tabindex="0"></div>
-        <div class="action-buttons">
-          <button id="preview-button" class="action-btn preview-btn tooltip micro-interaction" data-tooltip="在新窗口预览" aria-label="在新窗口预览">
-            <i class="fas fa-external-link-alt" aria-hidden="true"></i>
-          </button>
-          <button id="copy-button" class="action-btn tooltip micro-interaction" data-tooltip="复制链接" aria-label="复制链接">
-            <i class="fas fa-copy" aria-hidden="true"></i>
-          </button>
-        </div>
+    <!-- Result section -->
+    <div id="result-section" class="glass-card result-card" style="display: none;" aria-live="polite">
+      <div class="result-header">
+        <h3 class="result-title">🎉 链接已生成</h3>
       </div>
       
-      <!-- 密码保护开关 -->
-      <div class="password-protection-toggle">
-        <div class="protection-controls">
-          <div class="switch-container">
-            <input type="checkbox" id="password-toggle" class="switch-checkbox">
-            <label for="password-toggle" class="switch-label"></label>
+      <div class="result-content">
+        <div class="result-url-container">
+          <div id="result-url" class="result-url" tabindex="0"></div>
+          <div class="url-actions">
+            <button id="copy-button" class="action-btn copy-btn" data-tooltip="复制链接">
+              <i class="fas fa-copy"></i>
+            </button>
+            <button id="preview-button" class="action-btn preview-btn" data-tooltip="预览">
+              <i class="fas fa-external-link-alt"></i>
+            </button>
           </div>
-          <div id="password-info" class="password-info" style="display: none; margin-left: 15px;">
-            <span id="generated-password" class="generated-password" style="display: inline-block; cursor: pointer;" title="点击复制密码"></span>
-            <a href="#" id="copy-password-link" class="copy-password-link" style="display: inline-block; margin-left: 10px;">复制密码和网址</a>
+        </div>
+        
+        <!-- Password protection toggle -->
+        <div class="password-section">
+          <div class="password-toggle-row">
+            <div class="toggle-info">
+              <i class="fas fa-lock password-icon"></i>
+              <span class="toggle-label">密码保护</span>
+            </div>
+            <div class="modern-switch">
+              <input type="checkbox" id="password-toggle" class="switch-input">
+              <label for="password-toggle" class="switch-slider"></label>
+            </div>
+          </div>
+          
+          <div id="password-info" class="password-details" style="display: none;">
+            <div class="password-display">
+              <span class="password-label">访问密码:</span>
+              <span id="generated-password" class="password-value" title="点击复制密码"></span>
+              <button id="copy-password-btn" class="copy-password-btn">
+                <i class="fas fa-copy"></i>
+              </button>
+            </div>
+            <a href="#" id="copy-password-link" class="copy-all-link">复制密码和网址</a>
           </div>
         </div>
       </div>
-      
-
     </div>
   </div>
-  
-  <footer class="app-footer">
-    <p class="footer-text">@2025 <a href="https://x.com/vista8" target="_blank" rel="noopener noreferrer">向阳乔木</a></p>
-  </footer>
 </div>
+
+
 
 <%- include('partials/footer') %>

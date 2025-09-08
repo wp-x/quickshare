@@ -33,14 +33,25 @@ function isAuthenticated(req, res, next) {
     console.log('- Cookie 认证成功，允许访问');
     // 如果只有 Cookie 认证成功，同步到会话
     req.session.isAuthenticated = true;
-    // 注意：从Cookie恢复时无法确定用户类型，默认为普通用户
-    req.session.userType = req.session.userType || 'user';
+    // 从Cookie中恢复用户类型
+    const cookieUserType = req.cookies.userType;
+    if (cookieUserType && ['admin', 'user'].includes(cookieUserType)) {
+      req.session.userType = cookieUserType;
+      console.log('- 从Cookie恢复用户类型:', cookieUserType);
+    } else {
+      req.session.userType = 'user'; // 默认为普通用户
+      console.log('- Cookie中无有效用户类型，设置为普通用户');
+    }
     return next();
   }
 
-  // 未认证，重定向到登录页面
-  console.log('- 未认证，重定向到登录页面');
-  res.redirect('/login');
+  // 未认证：API请求返回401，页面请求重定向
+  console.log('- 未认证');
+  const isApi = req.path.startsWith('/api') || req.headers.accept?.includes('application/json');
+  if (isApi) {
+    return res.status(401).json({ success: false, error: '未认证' });
+  }
+  return res.redirect('/login');
 }
 
 /**
@@ -58,10 +69,27 @@ function isAdmin(req, res, next) {
     return next();
   }
 
-  // 首先检查是否已认证
+  // 会话丢失时，尝试使用 Cookie 进行恢复（与 isAuthenticated 保持一致）
   if (!req.session || !req.session.isAuthenticated) {
-    console.log('- 用户未认证，重定向到登录页面');
-    return res.redirect('/login');
+    if (req.cookies && req.cookies.auth === 'true') {
+      console.log('- 会话缺失，但检测到Cookie认证，尝试恢复会话');
+      req.session.isAuthenticated = true;
+      const cookieUserType = req.cookies.userType;
+      if (cookieUserType && ['admin', 'user'].includes(cookieUserType)) {
+        req.session.userType = cookieUserType;
+        console.log('- 从Cookie恢复用户类型:', cookieUserType);
+      } else {
+        req.session.userType = 'user';
+        console.log('- Cookie中无有效用户类型，设置为普通用户');
+      }
+    } else {
+      console.log('- 用户未认证');
+      const isApi = req.path.startsWith('/api') || req.headers.accept?.includes('application/json');
+      if (isApi) {
+        return res.status(401).json({ success: false, error: '未认证' });
+      }
+      return res.redirect('/login');
+    }
   }
 
   // 检查是否为管理员
@@ -72,10 +100,11 @@ function isAdmin(req, res, next) {
 
   // 不是管理员，返回403错误
   console.log('- 权限不足，拒绝访问');
-  res.status(403).render('error', {
-    title: '权限不足',
-    message: '您没有权限访问此页面'
-  });
+  const isApi = req.path.startsWith('/api') || req.headers.accept?.includes('application/json');
+  if (isApi) {
+    return res.status(403).json({ success: false, error: '权限不足' });
+  }
+  return res.status(403).render('error', { title: '权限不足', message: '您没有权限访问此页面' });
 }
 
 module.exports = {

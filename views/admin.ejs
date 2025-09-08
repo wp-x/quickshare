@@ -4,11 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= title %></title>
+    <base href="/">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <link rel="stylesheet" href="/css/admin.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
     <div class="admin-container">
+        <!-- 背景元素 -->
+        <div class="grid-background"></div>
+        <div id="particles-js"></div>
+        
         <!-- 头部导航 -->
         <header class="admin-header">
             <div class="header-content">
@@ -150,6 +158,9 @@
     <!-- 消息提示 -->
     <div id="message" class="message"></div>
 
-    <script src="/js/admin.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    <script src="/js/theme.js?v=<%= Date.now() %>"></script>
+    <script src="/js/particles-config.js?v=<%= Date.now() %>"></script>
+    <script src="/js/admin.js?v=<%= Date.now() %>"></script>
 </body>
 </html> 

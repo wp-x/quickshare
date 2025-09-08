@@ -5,6 +5,7 @@ class AdminPanel {
         this.pageSize = 10;
         this.searchQuery = '';
         this.selectedPages = new Set();
+        this.apiOrigin = window.location.origin;
         this.init();
     }
 
@@ -61,10 +62,13 @@ class AdminPanel {
 
     async loadStats() {
         try {
-            const response = await fetch('/api/admin/stats');
-            const result = await response.json();
-            
-            if (result.success) {
+            const statsUrl = new URL('/api/admin/stats', this.apiOrigin).toString();
+            const { status, data: result } = await this.httpJson(statsUrl, { method: 'GET' });
+            if (status === 401 || status === 403) {
+                window.location.href = '/login';
+                return;
+            }
+            if (result && result.success) {
                 this.updateStatsDisplay(result.data);
             } else {
                 this.showMessage('加载统计信息失败', 'error');
@@ -92,10 +96,15 @@ class AdminPanel {
                 search: this.searchQuery
             });
             
-            const response = await fetch(`/api/admin/pages?${params}`);
-            const result = await response.json();
+            const listUrl = new URL('/api/admin/pages', this.apiOrigin);
+            listUrl.search = params.toString();
+            const { status, data: result } = await this.httpJson(listUrl.toString(), { method: 'GET' });
+            if (status === 401 || status === 403) {
+                window.location.href = '/login';
+                return;
+            }
             
-            if (result.success) {
+            if (result && result.success) {
                 this.updatePagesDisplay(result.data);
                 this.updatePagination(result.pagination);
             } else {
@@ -323,24 +332,25 @@ class AdminPanel {
         this.showLoading();
 
         try {
-            let response;
+            let status, result;
             if (pageIds.length === 1) {
                 // 单个删除
-                response = await fetch(`/api/admin/pages/${pageIds[0]}`, {
-                    method: 'DELETE'
-                });
+                const delUrl = new URL(`/api/admin/pages/${pageIds[0]}`, this.apiOrigin);
+                ({ status, data: result } = await this.httpJson(delUrl.toString(), { method: 'DELETE' }));
             } else {
                 // 批量删除
-                response = await fetch('/api/admin/pages/batch-delete', {
+                const batchUrl = new URL('/api/admin/pages/batch-delete', this.apiOrigin);
+                ({ status, data: result } = await this.httpJson(batchUrl.toString(), {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ ids: pageIds })
-                });
+                    headers: { 'Content-Type': 'application/json' },
+                    body: { ids: pageIds }
+                }));
             }
 
-            const result = await response.json();
+            if (status === 401 || status === 403) {
+                window.location.href = '/login';
+                return;
+            }
             
             if (result.success) {
                 this.showMessage(result.message || '删除成功', 'success');
@@ -356,6 +366,40 @@ class AdminPanel {
         } finally {
             this.hideLoading();
         }
+    }
+
+    // 使用 XMLHttpRequest 实现的 JSON 请求，避免被 fetch 拦截/篡改
+    httpJson(url, options = {}) {
+        const method = (options.method || 'GET').toUpperCase();
+        const headers = options.headers || {};
+        const body = options.body;
+
+        return new Promise((resolve, reject) => {
+            const xhr = new XMLHttpRequest();
+            xhr.open(method, url, true);
+            xhr.withCredentials = true;
+            xhr.setRequestHeader('Accept', 'application/json');
+            if (headers['Content-Type']) xhr.setRequestHeader('Content-Type', headers['Content-Type']);
+
+            xhr.onerror = () => reject(new Error('Network error'));
+            xhr.onload = () => {
+                let data;
+                try {
+                    data = xhr.responseText ? JSON.parse(xhr.responseText) : null;
+                } catch (e) {
+                    data = { success: false, error: 'Invalid JSON', raw: xhr.responseText };
+                }
+                resolve({ status: xhr.status, data });
+            };
+
+            if (method === 'GET' || method === 'HEAD' || body === undefined) {
+                xhr.send();
+            } else {
+                const payload = typeof body === 'string' ? body : JSON.stringify(body);
+                if (!headers['Content-Type']) xhr.setRequestHeader('Content-Type', 'application/json');
+                xhr.send(payload);
+            }
+        });
     }
 
     showLoading() {

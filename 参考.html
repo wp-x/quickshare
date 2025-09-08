@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="dark">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes"/>
+    <link rel="preload" href="_next/static/media/e4af272ccee01ff0-s.p.woff2.woff2" as="font" type="font/woff2"/>
+    <link rel="stylesheet" href="_next/static/css/8421ee36dc3bb997.css"/>
+    <link rel="preconnect" href="https://cdn.animatex.io"/>
+    <link rel="dns-prefetch" href="https://cdn.animatex.io"/>
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff"/>
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#000000"/>
+    <title>AnimateX - AI视频生成平台</title>
+    <meta name="description" content="用AI技术快速生成动画视频，让创意瞬间变成现实"/>
+    <meta name="author" content="AnimateX Team"/>
+    <link rel="manifest" href="site.webmanifest.webmanifest"/>
+    <meta name="keywords" content="AI视频生成,AI动画制作,文生视频,图生视频,短视频创作,人工智能,视频制作,动画创作,视频特效"/>
+    <meta name="creator" content="AnimateX"/>
+    <meta name="publisher" content="AnimateX"/>
+    <meta name="robots" content="index, follow"/>
+    <meta name="googlebot" content="index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1"/>
+    <meta name="format-detection" content="telephone=no, address=no, email=no"/>
+    <meta property="og:title" content="AnimateX - AI视频生成平台"/>
+    <meta property="og:description" content="用AI技术快速生成动画视频，让创意瞬间变成现实"/>
+    <meta property="og:url" content="https://animatex.ai"/>
+    <meta property="og:site_name" content="AnimateX"/>
+    <meta property="og:locale" content="zh_CN"/>
+    <meta property="og:type" content="website"/>
+    <meta name="twitter:card" content="summary"/>
+    <meta name="twitter:title" content="AnimateX - AI视频生成平台"/>
+    <meta name="twitter:description" content="用AI技术快速生成动画视频，让创意瞬间变成现实"/>
+    <link rel="shortcut icon" href="favicon/favicon-16x16.png"/>
+    <link rel="icon" href="favicon/favicon.ico"/>
+    <link rel="apple-touch-icon" href="favicon/apple-touch-icon.png"/>
+    
+    <style>
+        @keyframes marquee {
+            from { transform: translateX(0); }
+            to { transform: translateX(-33.333%); }
+        }
+        
+        .animate-float {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .glass-morphism {
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body class="__className_e8ce0c min-h-screen bg-gray-900 antialiased">
+    <div class="bg-custom-gray-100">
+        <div class="h-screen relative z-10">
+            <video autoplay muted loop playsinline class="absolute inset-0 w-full h-full object-cover z-0">
+                <source src="https://cdn.animatex.io/static/hero-videos/hero-bg-lossless.webm" type="video/webm"/>
+                <source src="https://cdn.animatex.io/static/hero-videos/hero-bg.mp4" type="video/mp4"/>
+            </video>
+            <div class="absolute inset-0 bg-black/40 z-10"></div>
+            
+            <nav class="relative z-20 flex items-center justify-between p-6 lg:px-8">
+                <div class="flex items-center">
+                    <a class="flex items-center space-x-2" href="index.html">
+                        <img alt="AnimateX Logo" loading="lazy" width="32" height="32" class="w-8 h-8" src="_next/logo.png"/>
+                        <span class="text-2xl font-bold text-white">AnimateX</span>
+                    </a>
+                </div>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a class="text-white hover:custom-gray-900 transition-colors" href="login.html">Sign In</a>
+                    <a href="signup.html">
+                        <button class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 bg-custom-gray-100 text-black shadow-lg hover:from-purple-600 hover:to-pink-600 transition-all duration-200 h-9 px-4 py-2 rounded-full">
+                            Get Started
+                        </button>
+                    </a>
+                </div>
+                <div class="md:hidden">
+                    <button class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 h-9 w-9 text-white hover:bg-white/10">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-6 w-6">
+                            <line x1="4" x2="20" y1="12" y2="12"></line>
+                            <line x1="4" x2="20" y1="6" y2="6"></line>
+                            <line x1="4" x2="20" y1="18" y2="18"></line>
+                        </svg>
+                    </button>
+                </div>
+            </nav>
+            
+            <div class="relative z-20 px-6 text-center pt-32 pb-24">
+                <div class="max-w-4xl mx-auto">
+                    <h1 class="hero-title text-5xl md:text-7xl font-bold mb-8 bg-white bg-clip-text text-transparent leading-relaxed animate-float">
+                        Imagine. Click. Animate
+                    </h1>
+                    <p class="text-xl md:text-2xl text-gray-300 mb-12 max-w-2xl mx-auto leading-relaxed">
+                        Bring your wildest ideas to life with AI.
+                    </p>
+                    
+                    <div class="max-w-2xl mx-auto mb-8">
+                        <div class="relative glass-morphism rounded-2xl p-2 shadow-2xl">
+                            <div class="flex items-center">
+                                <div class="flex items-center justify-center w-12 h-12 text-gray-400">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5">
+                                        <circle cx="11" cy="11" r="8"></circle>
+                                        <path d="m21 21-4.3-4.3"></path>
+                                    </svg>
+                                </div>
+                                <input class="flex w-full rounded-md border-input px-3 py-1 shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground focus-visible:outline-none focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 flex-1 bg-transparent border-0 text-white placeholder:text-gray-400 focus-visible:ring-0 focus-visible:ring-offset-0 text-lg h-12" placeholder="Describe your idea" value=""/>
+                                <button class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 bg-custom-gray-100 text-black shadow-lg hover:from-purple-600 hover:to-pink-600 transition-all duration-200 py-2 h-12 px-8 rounded-xl font-semibold">
+                                    Generate
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-2 h-4 w-4">
+                                        <path d="M5 12h14"></path>
+                                        <path d="m12 5 7 7-7 7"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="relative z-10">
+            <section class="relative py-10 md:py-30 px-6">
+                <div class="max-w-6xl mx-auto text-center">
+                    <h2 class="text-4xl md:text-9xl font-bold bg-black bg-clip-text text-transparent leading-tight mt-4 md:mt-32">
+                        <div>Make a Wish，</div>
+                        <div class="mt-4 md:mt-10">Animate a World.</div>
+                    </h2>
+                </div>
+            </section>
+            
+            <div class="py-20">
+                <section aria-label="All in One AI Platform" class="w-full bg-transparent text-black rounded-lg border-transparent overflow-hidden">
+                    <div class="p-6 md:p-8 lg:p-10 pl-8 md:pl-12 lg:pl-16">
+                        <div class="grid grid-cols-1 lg:grid-cols-[3fr_2fr] gap-6 lg:gap-8 pb-6 md:pb-8 border-b">
+                            <h2 class="text-5xl md:text-7xl font-semibold tracking-tighter text-balance ml-8 md:ml-12 lg:ml-16">
+                                All in One AI Platform
+                            </h2>
+                            <p class="self-start lg:justify-self-end text-balance ml-8 md:ml-12 lg:ml-16 mt-2 md:mt-3 text-base md:text-lg lg:text-xl">
+                                Join thousands of creators who trust our AI-powered platform to bring their visions to life.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="w-full overflow-hidden" style="mask-image:linear-gradient(to right, transparent, black 10%, black 90%, transparent)">
+                        <div class="flex w-max items-center gap-2 md:gap-3 lg:gap-4 py-4 pr-4 hover:[animation-play-state:paused] transition-all duration-300 ease-in-out" style="animation:marquee 40s linear infinite">
+                            <div class="group relative h-20 w-32 md:h-20 md:w-36 lg:h-24 lg:w-40 shrink-0 flex items-center justify-center rounded-lg bg-transparent overflow-hidden">
+                                <img alt="google-veo" loading="lazy" width="120" height="40" class="relative h-3/4 w-auto object-contain scale-85 md:scale-90 lg:scale-100" src="logos/google-veo.svg"/>
+                            </div>
+                            <div class="group relative h-20 w-32 md:h-20 md:w-36 lg:h-24 lg:w-40 shrink-0 flex items-center justify-center rounded-lg bg-transparent overflow-hidden">
+                                <img alt="openai_black" loading="lazy" width="120" height="40" class="relative h-3/4 w-auto object-contain scale-85 md:scale-90 lg:scale-100" src="logos/openai_black.svg"/>
+                            </div>
+                            <div class="group relative h-20 w-32 md:h-20 md:w-36 lg:h-24 lg:w-40 shrink-0 flex items-center justify-center rounded-lg bg-transparent overflow-hidden">
+                                <img alt="hailuo" loading="lazy" width="120" height="40" class="relative h-3/4 w-auto object-contain scale-85 md:scale-90 lg:scale-100" src="logos/hailuo.svg"/>
+                            </div>
+                            <div class="group relative h-20 w-32 md:h-20 md:w-36 lg:h-24 lg:w-40 shrink-0 flex items-center justify-center rounded-lg bg-transparent overflow-hidden">
+                                <img alt="midjourney_black" loading="lazy" width="120" height="40" class="relative h-3/4 w-auto object-contain scale-85 md:scale-90 lg:scale-100" src="logos/midjourney_black.svg"/>
+                            </div>
+                            <div class="group relative h-20 w-32 md:h-20 md:w-36 lg:h-24 lg:w-40 shrink-0 flex items-center justify-center rounded-lg bg-transparent overflow-hidden">
+                                <img alt="flux_black" loading="lazy" width="120" height="40" class="relative h-3/4 w-auto object-contain scale-85 md:scale-90 lg:scale-100" src="logos/flux_black.svg"/>
+                            </div>
+                            <div class="group relative h-20 w-32 md:h-20 md:w-36 lg:h-24 lg:w-40 shrink-0 flex items-center justify-center rounded-lg bg-transparent overflow-hidden">
+                                <img alt="doubao-color" loading="lazy" width="120" height="40" class="relative h-3/4 w-auto object-contain scale-85 md:scale-90 lg:scale-100" src="logos/doubao-color.svg"/>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+        
+        <footer class="bg-black text-white py-12 px-6 md:py-16 lg:px-8">
+            <div class="max-w-7xl mx-auto">
+                <div class="grid grid-cols-4 md:grid-cols-12 gap-2 md:gap-8 mb-12">
+                    <div class="col-span-4 md:col-span-2 space-y-4 mb-8 md:mb-0">
+                        <div class="flex items-center gap-2 md:gap-0 md:relative">
+                            <img alt="AnimateX Logo" loading="lazy" width="28" height="28" class="w-7 h-7 md:w-6 md:h-6" src="_next/logo.png"/>
+                            <span class="text-xl font-bold md:absolute md:left-8">AnimateX</span>
+                        </div>
+                        <p class="text-gray-300 text-sm leading-relaxed max-w-xs md:max-w-none">Create viral animation with AnimateX.</p>
+                        <div class="flex items-center gap-4 md:gap-0 md:justify-start md:relative">
+                            <a target="_blank" rel="noopener noreferrer" class="hover:opacity-80 transition-opacity p-1 md:p-0" href="https://x.com">
+                                <img alt="X (Twitter)" loading="lazy" width="24" height="24" class="w-6 h-6 rounded-full" src="logos/x.svg"/>
+                            </a>
+                            <a target="_blank" rel="noopener noreferrer" class="hover:opacity-80 transition-opacity p-1 md:p-0 md:absolute md:left-12" href="https://discord.com">
+                                <img alt="Discord" loading="lazy" width="24" height="24" class="w-6 h-6 rounded-full" src="logos/discord.svg"/>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="hidden md:block md:col-span-1"></div>
+                    
+                    <div class="col-span-1 md:col-span-2">
+                        <h3 class="font-semibold text-xs md:text-lg mb-2 md:mb-4">Features</h3>
+                        <ul class="space-y-1 md:space-y-3">
+                            <li><span class="text-gray-300 hover:text-white transition-colors text-xs md:text-sm inline-block py-0.5 md:py-0 cursor-pointer">Image to Image</span></li>
+                            <li><span class="text-gray-300 hover:text-white transition-colors text-xs md:text-sm inline-block py-0.5 md:py-0 cursor-pointer">Text to Image</span></li>
+                            <li><span class="text-gray-300 hover:text-white transition-colors text-xs md:text-sm inline-block py-0.5 md:py-0 cursor-pointer">Image to Video</span></li>
+                            <li><span class="text-gray-300 hover:text-white transition-colors text-xs md:text-sm inline-block py-0.5 md:py-0 cursor-pointer">Text to Video</span></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="col-span-1 md:col-span-2">
+                        <h3 class="font-semibold text-xs md:text-lg mb-2 md:mb-4">Resources</h3>
+                        <ul class="space-y-1 md:space-y-3">
+                            <li><span class="text-gray-300 hover:text-white transition-colors text-xs md:text-sm inline-block py-0.5 md:py-0 cursor-pointer">Blog</span></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="col-span-1 md:col-span-2">
+                        <h3 class="font-semibold text-xs md:text-lg mb-2 md:mb-4">Legal</h3>
+                        <ul class="space-y-1 md:space-y-3">
+                            <li><a class="text-gray-300 hover:text-white transition-colors text-xs md:text-sm inline-block py-0.5 md:py-0" href="privacy-policy.html">Privacy Policy</a></li>
+                            <li><a class="text-gray-300 hover:text-white transition-colors text-xs md:text-sm inline-block py-0.5 md:py-0" href="terms-of-service.html">Terms of Service</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="col-span-1 md:col-span-3">
+                        <h3 class="font-semibold text-xs md:text-lg mb-2 md:mb-4">Company</h3>
+                        <ul class="space-y-1 md:space-y-3">
+                            <li><span class="text-gray-300 hover:text-white transition-colors text-xs md:text-sm inline-block py-0.5 md:py-0 cursor-pointer">About us</span></li>
+                            <li><a class="text-gray-300 hover:text-white transition-colors text-xs md:text-sm inline-block py-0.5 md:py-0" href="mailto:contact@animatex.io">Contact</a></li>
+                            <li><a class="text-gray-300 hover:text-white transition-colors text-xs md:text-sm inline-block py-0.5 md:py-0" href="#start-creating">Pricing</a></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="border-t border-gray-800 md:border-custom-gray-500 pt-6 md:pt-8">
+                    <p class="text-center text-gray-400 text-xs md:text-sm">© 2025 AnimateX. All rights reserved.</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>

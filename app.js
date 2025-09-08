@@ -147,14 +147,20 @@ app.post('/login', (req, res) => {
     req.session.userType = userType;
     console.log('- 设置会话认证标记和用户类型');
 
-    // 2. 设置 Cookie
+    // 2. 设置 Cookie，包含用户类型
     res.cookie('auth', 'true', {
       maxAge: 24 * 60 * 60 * 1000, // 24小时
       httpOnly: true,
       secure: false, // 如果使用 HTTPS，设置为 true
       sameSite: 'lax'
     });
-    console.log('- 设置认证 Cookie');
+    res.cookie('userType', userType, {
+      maxAge: 24 * 60 * 60 * 1000, // 24小时
+      httpOnly: true,
+      secure: false, // 如果使用 HTTPS，设置为 true
+      sameSite: 'lax'
+    });
+    console.log('- 设置认证 Cookie 和用户类型 Cookie');
 
     // 先尝试直接重定向，不等待会话保存
     console.log('- 重定向到首页');
@@ -173,6 +179,9 @@ app.post('/login', (req, res) => {
 app.get('/logout', (req, res) => {
   // 清除会话
   req.session.destroy();
+  // 清除认证相关的Cookie
+  res.clearCookie('auth');
+  res.clearCookie('userType');
   res.redirect('/login');
 });
 

@@ -3,75 +3,121 @@
 <head>
   <%- include('partials/header') %>
   <title><%= title %></title>
-  <link rel="stylesheet" href="/css/login.css">
+  <style>
+    /* Glass morphism effect */
+    .glass-morphism {
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    /* Floating animation */
+    .animate-float {
+      animation: float 3s ease-in-out infinite;
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+  </style>
 </head>
-<body>
-  <div class="app-container">
-    <!-- 背景元素 -->
-    <div class="grid-background"></div>
-    <div id="particles-js"></div>
-
-    <div class="main-container">
-      <header class="app-header">
-        <div class="title-container">
-          <h1 class="cyber-title"><span>H</span><span>T</span><span>M</span><span>L</span><span>-</span><span>G</span><span>O</span></h1>
+<body class="min-h-screen bg-gray-900 antialiased">
+  <div class="bg-custom-gray-100">
+    <div class="h-screen relative z-10">
+      <!-- Background video -->
+      <video autoplay muted loop playsinline class="absolute inset-0 w-full h-full object-cover z-0">
+        <source src="https://cdn.animatex.io/static/hero-videos/hero-bg-lossless.webm" type="video/webm"/>
+        <source src="https://cdn.animatex.io/static/hero-videos/hero-bg.mp4" type="video/mp4"/>
+      </video>
+      <div class="absolute inset-0 bg-black/40 z-10"></div>
+      
+      <!-- Navigation -->
+      <nav class="relative z-20 flex items-center justify-between p-6 lg:px-8">
+        <div class="flex items-center">
+          <a class="flex items-center space-x-2" href="/">
+            <i class="fas fa-code text-white text-2xl"></i>
+            <span class="text-2xl font-bold text-white">QuickShare</span>
+          </a>
         </div>
-        <p class="app-description">分享AI生成内容的最佳方式</p>
-      </header>
-
-      <div class="content-area">
-        <div class="login-card">
-          <h2 class="card-title"><i class="fas fa-lock" style="margin-right: 10px; color: var(--accent);"></i>请输入访问密码</h2>
-
-          <% if (error) { %>
-            <div class="error-message"><%= error %></div>
-          <% } %>
-
-          <form action="/login" method="post" class="login-form">
-            <div class="form-group">
-              <div class="password-field">
-                <input type="password" name="password" id="password-input" class="cyber-input" placeholder="请输入访问密码..." required autofocus>
-                <button type="button" id="toggle-password" class="toggle-password" aria-label="显示密码">
-                  <i class="fas fa-eye"></i>
-                </button>
+      </nav>
+      
+      <!-- Main content -->
+      <div class="relative z-20 px-6 text-center pt-32 pb-24">
+        <div class="max-w-4xl mx-auto">
+          <h1 class="text-5xl md:text-7xl font-bold mb-8 leading-relaxed animate-float" style="background: linear-gradient(135deg, #ffffff 0%, #e9d5ff 40%, #a855f7 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+            HTML-SHARE
+          </h1>
+          <p class="text-xl md:text-2xl text-gray-300 mb-12 max-w-2xl mx-auto leading-relaxed">
+            分享AI生成内容的最佳方式
+          </p>
+          
+          <!-- Login form container -->
+          <div class="max-w-2xl mx-auto mb-8">
+            <div class="relative glass-morphism rounded-2xl p-8 shadow-2xl">
+              <div class="mb-6">
+                <h2 class="text-2xl font-semibold text-white mb-2 flex items-center justify-center">
+                  <i class="fas fa-lock mr-3 text-yellow-400"></i>请输入访问密码
+                </h2>
               </div>
+              
+              <% if (error) { %>
+                <div class="mb-6 bg-red-500/20 text-red-300 p-4 rounded-xl border border-red-500/30 text-sm">
+                  <%= error %>
+                </div>
+              <% } %>
+              
+              <form action="/login" method="post" class="login-form">
+                <div class="password-field relative mb-6">
+                  <input type="password" 
+                         name="password" 
+                         id="password-input" 
+                         class="w-full bg-transparent border-0 text-white placeholder:text-gray-400 focus-visible:ring-0 focus-visible:ring-offset-0 text-lg h-16 text-center rounded-xl glass-morphism font-mono tracking-wide pr-12" 
+                         placeholder="请输入访问密码..." 
+                         required 
+                         autofocus>
+                  <button type="button" 
+                          id="toggle-password" 
+                          class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
+                          aria-label="显示密码">
+                    <i class="fas fa-eye text-lg"></i>
+                  </button>
+                </div>
+                
+                <div class="form-group">
+                  <button type="submit" class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium bg-white text-black shadow-lg hover:from-purple-600 hover:to-pink-600 transition-all duration-200 h-12 px-8 rounded-xl font-semibold">
+                    登录
+                    <i class="fas fa-arrow-right ml-2"></i>
+                  </button>
+                </div>
+              </form>
             </div>
-
-            <div class="form-group">
-              <button type="submit" class="submit-btn">
-                <span>登录</span>
-                <i class="fas fa-arrow-right"></i>
-              </button>
-            </div>
-          </form>
-
-          <script>
-            document.addEventListener('DOMContentLoaded', function() {
-              const passwordInput = document.getElementById('password-input');
-              const toggleButton = document.getElementById('toggle-password');
-
-              toggleButton.addEventListener('click', function() {
-                // 切换密码可见性
-                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-                passwordInput.setAttribute('type', type);
-
-                // 切换图标
-                toggleButton.querySelector('i').className =
-                  type === 'password' ? 'fas fa-eye' : 'fas fa-eye-slash';
-              });
-            });
-          </script>
+          </div>
         </div>
       </div>
-
-      <footer class="app-footer">
-        <p class="footer-text">@2025 <a href="https://x.com/vista8" target="_blank" rel="noopener noreferrer">向阳乔木</a></p>
-      </footer>
     </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
   <script src="/js/theme.js"></script>
   <script src="/js/particles-config.js"></script>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const passwordInput = document.getElementById('password-input');
+      const toggleButton = document.getElementById('toggle-password');
+
+      toggleButton.addEventListener('click', function() {
+        // 切换密码可见性
+        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput.setAttribute('type', type);
+
+        // 切换图标
+        toggleButton.querySelector('i').className =
+          type === 'password' ? 'fas fa-eye' : 'fas fa-eye-slash';
+      });
+    });
+  </script>
 </body>
 </html>
