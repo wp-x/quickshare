@@ -216,35 +216,47 @@ async function batchDeletePages(ids) {
  */
 async function getStats() {
   try {
+    console.log('开始获取统计信息...');
+    
     // 总页面数
+    console.log('查询总页面数...');
     const totalResult = await get('SELECT COUNT(*) as total FROM pages');
     const total = totalResult.total;
+    console.log('总页面数:', total);
     
     // 受保护的页面数
+    console.log('查询受保护页面数...');
     const protectedResult = await get('SELECT COUNT(*) as protected FROM pages WHERE is_protected = 1');
     const protected_count = protectedResult.protected;
+    console.log('受保护页面数:', protected_count);
     
     // 按代码类型统计
+    console.log('查询代码类型统计...');
     const typeStats = await query(`
       SELECT code_type, COUNT(*) as count 
       FROM pages 
       GROUP BY code_type 
       ORDER BY count DESC
     `);
+    console.log('代码类型统计:', typeStats);
     
     // 最近7天创建的页面数
+    console.log('查询最近7天页面数...');
     const sevenDaysAgo = Date.now() - (7 * 24 * 60 * 60 * 1000);
     const recentResult = await get('SELECT COUNT(*) as recent FROM pages WHERE created_at > ?', [sevenDaysAgo]);
     const recent_count = recentResult.recent;
+    console.log('最近7天页面数:', recent_count);
     
     // 今天创建的页面数
+    console.log('查询今天页面数...');
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const todayTimestamp = today.getTime();
     const todayResult = await get('SELECT COUNT(*) as today FROM pages WHERE created_at > ?', [todayTimestamp]);
     const today_count = todayResult.today;
+    console.log('今天页面数:', today_count);
     
-    return {
+    const stats = {
       total,
       protected_count,
       unprotected_count: total - protected_count,
@@ -252,8 +264,16 @@ async function getStats() {
       today_count,
       type_stats: typeStats
     };
+    
+    console.log('统计信息获取成功:', stats);
+    return stats;
   } catch (error) {
-    console.error('获取统计信息错误:', error);
+    console.error('获取统计信息错误 - 详细信息:', {
+      message: error.message,
+      code: error.code,
+      errno: error.errno,
+      stack: error.stack
+    });
     throw error;
   }
 }

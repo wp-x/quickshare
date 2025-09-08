@@ -319,20 +319,45 @@ app.post('/api/admin/pages/batch-delete', isAdmin, async (req, res) => {
 
 // 管理页面API - 获取统计信息
 app.get('/api/admin/stats', isAdmin, async (req, res) => {
+  // 添加请求超时处理
+  const timeout = setTimeout(() => {
+    if (!res.headersSent) {
+      console.error('获取统计信息超时');
+      res.status(504).json({
+        success: false,
+        error: '请求超时，请稍后重试'
+      });
+    }
+  }, 10000); // 10秒超时
+
   try {
+    console.log('API: 开始获取统计信息...');
     const { getStats } = require('./models/pages');
     const stats = await getStats();
     
-    res.json({
-      success: true,
-      data: stats
-    });
+    clearTimeout(timeout);
+    
+    if (!res.headersSent) {
+      console.log('API: 统计信息获取成功');
+      res.json({
+        success: true,
+        data: stats
+      });
+    }
   } catch (error) {
-    console.error('获取统计信息错误:', error);
-    res.status(500).json({
-      success: false,
-      error: '服务器错误'
+    clearTimeout(timeout);
+    console.error('API: 获取统计信息错误:', {
+      message: error.message,
+      code: error.code,
+      stack: error.stack
     });
+    
+    if (!res.headersSent) {
+      res.status(500).json({
+        success: false,
+        error: '服务器错误: ' + error.message
+      });
+    }
   }
 });
 

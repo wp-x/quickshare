@@ -61,21 +61,46 @@ class AdminPanel {
     }
 
     async loadStats() {
-        try {
-            const statsUrl = new URL('/api/admin/stats', this.apiOrigin).toString();
-            const { status, data: result } = await this.httpJson(statsUrl, { method: 'GET' });
-            if (status === 401 || status === 403) {
-                window.location.href = '/login';
-                return;
+        let retryCount = 0;
+        const maxRetries = 3;
+        
+        while (retryCount < maxRetries) {
+            try {
+                console.log(`尝试获取统计信息 (第${retryCount + 1}次)`);
+                const statsUrl = new URL('/api/admin/stats', this.apiOrigin).toString();
+                const { status, data: result } = await this.httpJson(statsUrl, { 
+                    method: 'GET',
+                    timeout: 10000 // 10秒超时
+                });
+                
+                if (status === 401 || status === 403) {
+                    window.location.href = '/login';
+                    return;
+                }
+                
+                if (result && result.success) {
+                    console.log('统计信息获取成功:', result.data);
+                    this.updateStatsDisplay(result.data);
+                    return; // 成功则退出重试循环
+                } else {
+                    throw new Error(result.error || '获取统计信息失败');
+                }
+            } catch (error) {
+                console.error(`获取统计信息错误 (第${retryCount + 1}次尝试):`, error);
+                retryCount++;
+                
+                if (retryCount >= maxRetries) {
+                    this.showMessage('加载统计信息失败，请刷新页面重试', 'error');
+                    // 显示加载失败的占位符
+                    this.showStatsError();
+                    return;
+                }
+                
+                // 等待一段时间后重试 (指数退避)
+                const delay = Math.pow(2, retryCount) * 1000; // 2秒, 4秒, 8秒
+                console.log(`等待${delay}ms后重试...`);
+                await new Promise(resolve => setTimeout(resolve, delay));
             }
-            if (result && result.success) {
-                this.updateStatsDisplay(result.data);
-            } else {
-                this.showMessage('加载统计信息失败', 'error');
-            }
-        } catch (error) {
-            console.error('加载统计信息错误:', error);
-            this.showMessage('加载统计信息失败', 'error');
         }
     }
 
@@ -84,6 +109,14 @@ class AdminPanel {
         document.getElementById('protected-pages').textContent = stats.protected_count;
         document.getElementById('today-pages').textContent = stats.today_count;
         document.getElementById('recent-pages').textContent = stats.recent_count;
+    }
+
+    showStatsError() {
+        // 显示加载失败的占位符
+        document.getElementById('total-pages').textContent = '--';
+        document.getElementById('protected-pages').textContent = '--';
+        document.getElementById('today-pages').textContent = '--';
+        document.getElementById('recent-pages').textContent = '--';
     }
 
     async loadPages() {
@@ -373,15 +406,18 @@ class AdminPanel {
         const method = (options.method || 'GET').toUpperCase();
         const headers = options.headers || {};
         const body = options.body;
+        const timeout = options.timeout || 30000; // 默认30秒超时
 
         return new Promise((resolve, reject) => {
             const xhr = new XMLHttpRequest();
             xhr.open(method, url, true);
             xhr.withCredentials = true;
+            xhr.timeout = timeout; // 设置超时时间
             xhr.setRequestHeader('Accept', 'application/json');
             if (headers['Content-Type']) xhr.setRequestHeader('Content-Type', headers['Content-Type']);
 
             xhr.onerror = () => reject(new Error('Network error'));
+            xhr.ontimeout = () => reject(new Error('Request timeout'));
             xhr.onload = () => {
                 let data;
                 try {
